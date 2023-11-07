@@ -42,6 +42,8 @@ func main() {
 	})
 
 	http.HandleFunc("/current", currentHandler)
+	http.HandleFunc("/previous", previousHandler)
+	http.HandleFunc("/next", nextHandler)
 
 	fmt.Println("Server running on port 8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
@@ -52,6 +54,24 @@ func main() {
 
 func currentHandler(w http.ResponseWriter, r *http.Request) {
 	fibLock.Lock()
+	current := fib.current
+	fibLock.Unlock()
+
+	fmt.Fprintln(w, current)
+}
+
+func previousHandler(w http.ResponseWriter, r *http.Request) {
+	fibLock.Lock()
+	fib.bwd()
+	current := fib.current
+	fibLock.Unlock()
+
+	fmt.Fprintln(w, current)
+}
+
+func nextHandler(w http.ResponseWriter, r *http.Request) {
+	fibLock.Lock()
+	fib.fwd()
 	current := fib.current
 	fibLock.Unlock()
 
