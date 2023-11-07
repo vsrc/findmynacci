@@ -24,7 +24,11 @@ func (f *findmynacci) fwd() {
 
 // steps backward with the fibonacci sequence
 func (f *findmynacci) bwd() {
-	f.current, f.previous = f.previous, f.current - f.previous
+
+	// going backwards after 0, 1 pair is not supported
+	if (f.previous != 0) {
+		f.current, f.previous = f.previous, f.current - f.previous
+	}
 }
 
 var (
