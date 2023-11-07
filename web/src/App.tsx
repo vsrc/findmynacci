@@ -1,14 +1,26 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { Toaster, toast } from "react-hot-toast";
 
 const App = () => {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState("0");
 
-  const increment = () => setCount((prevCount) => prevCount + 1);
-  const decrement = () =>
-    setCount((prevCount) => (prevCount > 0 ? prevCount - 1 : 0));
+  const fetchNumber = async (direction: string) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/${direction}`);
+      if (response.status === 200 && response.data?.current) {
+        setCount(response.data.current);
+      } else {
+        toast.error("Server responded, but the format is incorrect.");
+      }
+    } catch (error) {
+      toast.error("There was an issue connecting to the server.");
+    }
+  };
 
   return (
     <div className="flex flex-col h-screen bg-[#1A202C] text-white">
+      <Toaster position="top-center" />
       <header className="text-4xl p-5 text-center font-bold">
         Find my (fibo)nacci
       </header>
@@ -18,13 +30,16 @@ const App = () => {
         <div className="mt-8">
           <button
             className="btn btn-lg btn-accent m-2"
-            onClick={decrement}
-            disabled={count === 0}
+            onClick={() => fetchNumber("previous")}
+            disabled={count === "0"}
           >
-            Decrease
+            Previous
           </button>
-          <button className="btn btn-lg btn-primary m-2" onClick={increment}>
-            Increase
+          <button
+            className="btn btn-lg btn-primary m-2"
+            onClick={() => fetchNumber("next")}
+          >
+            Next
           </button>
         </div>
       </main>

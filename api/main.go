@@ -14,6 +14,29 @@ type findmynacci struct {
 	previous uint64
 }
 
+var (
+	// global variable to hold the findmynacci struct
+	fib = newFindmynacci()
+
+	// global variable to lock and prevent the race conditions
+	fibLock sync.Mutex
+)
+
+func corsHeader(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Content-Type")
+}
+
+func jsonHeader(w *http.ResponseWriter) {
+	(*w).Header().Set("Content-Type", "application/json")
+}
+
+func setHeaders(w *http.ResponseWriter) {
+	corsHeader(w)
+	jsonHeader(w)
+}
+
 // function to initialize the findmynacci struct
 func newFindmynacci() *findmynacci {
 	return &findmynacci{current: 1, previous: 0}
@@ -28,22 +51,21 @@ func (f *findmynacci) fwd() {
 func (f *findmynacci) bwd() {
 
 	// going backwards after 0, 1 pair is not supported
-	if (f.previous != 0) {
+	if f.previous != 0 {
 		f.current, f.previous = f.previous, f.current - f.previous
 	}
 }
 
-var (
-	// global variable to hold the findmynacci struct
-	fib = newFindmynacci()
-
-	// global variable to lock and prevent the race conditions
-	fibLock sync.Mutex
-)
-
 func main() {
 	
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
+		// catch-all for preflight
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
 		fmt.Fprintf(w, "Hello World!")
 	})
 
@@ -63,7 +85,7 @@ func currentHandler(w http.ResponseWriter, r *http.Request) {
 	current := fib.current
 	fibLock.Unlock()
 
-	w.Header().Set("Content-Type", "application/json")
+	setHeaders(&w)
 	resp, err := json.Marshal(map[string]string {
 		"current": fmt.Sprintf("%v", current),
 	})
@@ -83,7 +105,7 @@ func previousHandler(w http.ResponseWriter, r *http.Request) {
 	current := fib.current
 	fibLock.Unlock()
 
-	w.Header().Set("Content-Type", "application/json")
+	setHeaders(&w)
 	resp, err := json.Marshal(map[string]string {
 		"current": fmt.Sprintf("%v", current),
 	})
@@ -103,7 +125,7 @@ func nextHandler(w http.ResponseWriter, r *http.Request) {
 	current := fib.current
 	fibLock.Unlock()
 
-	w.Header().Set("Content-Type", "application/json")
+	setHeaders(&w)
 	resp, err := json.Marshal(map[string]string {
 		"current": fmt.Sprintf("%v", current),
 	})
