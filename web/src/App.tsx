@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
 
@@ -18,6 +18,10 @@ const App = () => {
     }
   };
 
+  useEffect(() => {
+    fetchNumber("current");
+  }, []);
+
   return (
     <div className="flex flex-col h-screen bg-[#1A202C] text-white">
       <Toaster position="top-center" />
@@ -29,14 +33,22 @@ const App = () => {
         <div className="text-9xl font-bold">{count}</div>
         <div className="mt-8">
           <button
-            className="btn btn-lg btn-accent m-2"
+            className="btn btn-lg btn-accent m-2 w-32"
             onClick={() => fetchNumber("previous")}
             disabled={count === "0"}
           >
             Previous
           </button>
+
           <button
-            className="btn btn-lg btn-primary m-2"
+            className="btn btn-lg btn-secondary m-2 w-32"
+            onClick={() => fetchNumber("current")}
+          >
+            Current
+          </button>
+
+          <button
+            className="btn btn-lg btn-primary m-2 w-32"
             onClick={() => fetchNumber("next")}
           >
             Next
