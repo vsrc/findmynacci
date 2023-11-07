@@ -1,7 +1,19 @@
 package main
 
-import ()
+import (
+	"fmt"
+	"net/http"
+)
 
 func main() {
-	// TODO
+	
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Hello World!")
+	})
+
+	fmt.Println("Server running on port 8080")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		panic(err)
+	}
+
 }
