@@ -44,6 +44,12 @@ func newFindmynacci() *findmynacci {
 
 // steps forward with the fibonacci sequence
 func (f *findmynacci) fwd() {
+
+	if f.previous == 0 && f.current == 0 {
+		f.current = 1
+		return
+	}
+
 	f.current, f.previous = f.current + f.previous, f.current
 }
 
@@ -51,9 +57,11 @@ func (f *findmynacci) fwd() {
 func (f *findmynacci) bwd() {
 
 	// going backwards after 0, 1 pair is not supported
-	if f.previous != 0 {
-		f.current, f.previous = f.previous, f.current - f.previous
+	if f.previous == 0 {
+		f.current = 0
 	}
+
+	f.current, f.previous = f.previous, f.current - f.previous
 }
 
 func main() {
