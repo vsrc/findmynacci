@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"sync"
 )
@@ -61,7 +63,18 @@ func currentHandler(w http.ResponseWriter, r *http.Request) {
 	current := fib.current
 	fibLock.Unlock()
 
-	fmt.Fprintln(w, current)
+	w.Header().Set("Content-Type", "application/json")
+	resp, err := json.Marshal(map[string]string {
+		"current": fmt.Sprintf("%v", current),
+	})
+
+	if err != nil {
+		log.Fatalf("Error while marshaling to json. Err: %s", err)
+	}
+	
+	w.Write(resp)
+	return
+
 }
 
 func previousHandler(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +83,18 @@ func previousHandler(w http.ResponseWriter, r *http.Request) {
 	current := fib.current
 	fibLock.Unlock()
 
-	fmt.Fprintln(w, current)
+	w.Header().Set("Content-Type", "application/json")
+	resp, err := json.Marshal(map[string]string {
+		"current": fmt.Sprintf("%v", current),
+	})
+	
+	if err != nil {
+		log.Fatalf("Error while marshaling to json. Err: %s", err)
+	}
+
+	w.Write(resp)
+	return
+
 }
 
 func nextHandler(w http.ResponseWriter, r *http.Request) {
@@ -79,5 +103,16 @@ func nextHandler(w http.ResponseWriter, r *http.Request) {
 	current := fib.current
 	fibLock.Unlock()
 
-	fmt.Fprintln(w, current)
+	w.Header().Set("Content-Type", "application/json")
+	resp, err := json.Marshal(map[string]string {
+		"current": fmt.Sprintf("%v", current),
+	})
+
+	if err != nil {
+		log.Fatalf("Error while marshaling to json. Err: %s", err)
+	}
+
+	w.Write(resp)
+	return
+
 }
